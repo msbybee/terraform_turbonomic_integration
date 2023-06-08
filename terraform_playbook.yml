@@ -18,6 +18,7 @@
         repo: "{{ git_repo }}"
         dest: "{{ terraform_dir }}"
         version: "{{ git_branch }}"
+        force: "yes"
 
     - name: Configure AWS credentials
       blockinfile:
