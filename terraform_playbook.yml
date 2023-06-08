@@ -1,0 +1,38 @@
+---
+- name: Deploy VM via Terraform
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    git_repo: https://github.com/msbybee/terraform_turbonomic_integration.git # URL of the Git repository
+    git_branch: main  # Branch to checkout
+    terraform_dir: /opt/ansible-terraform  # Path to the Terraform project directory
+    aws_access_key: AKIARH7RNJKMCGSJLWNL
+    aws_secret_key: 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
+    aws_region: us-east-1
+    vm_instance_type: t2.micro
+
+  tasks:
+    - name: Clone Git repository
+      git:
+        repo: "{{ git_repo }}"
+        dest: "{{ terraform_dir }}"
+        version: "{{ git_branch }}"
+
+    - name: Configure AWS credentials
+      blockinfile:
+        path: ~/.aws/credentials
+        block: |
+          [default]
+          aws_access_key_id = "{{ aws_access_key }}"
+          aws_secret_access_key = "{{ aws_secret_key }}"
+
+    - name: Run Terraform init
+      command: terraform init
+      args:
+        chdir: "{{ terraform_dir }}"
+
+    - name: Run Terraform apply
+      command: terraform apply -auto-approve -var "instance_type={{ vm_instance_type }}" -var "aws_region_name={{ aws_region }}"
+      args:
+        chdir: "{{ terraform_dir }}"
