@@ -34,6 +34,6 @@
         chdir: "{{ terraform_dir }}"
 
     - name: Run Terraform apply
-      command: terraform apply -auto-approve -var "instance_type={{ vm_instance_type }}" -var "aws_region_name={{ aws_region }}"
+      command: terraform apply -auto-approve -var "aws_instance_type={{ vm_instance_type }}" -var "aws_region_name={{ aws_region }}"
       args:
         chdir: "{{ terraform_dir }}"
