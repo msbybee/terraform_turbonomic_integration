@@ -38,7 +38,11 @@
     - name: Commit the new {{ vm_name}}.yml file to the repo
       ansible.builtin.command:
         cmd: git commit -m "Add {{ vm_name }}.yml"
+      register: git_commit_result
+      failed_when: "'nothing to commit' not in git_commit_result.stderr and git_commit_result.rc != 0"
 
     - name: Push the commit to the remote repository
       ansible.builtin.command:
         cmd: git push
+      when: git_commit_result.rc == 0
+
