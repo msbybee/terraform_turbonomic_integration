@@ -31,17 +31,14 @@
         content: "vm_type: '{{ new_entity }}'"
         dest: "{{ vm_name }}.yml"
 
-    - name: Add file to Git
-      git:
-        repo: "{{ git_repo }}"
-        state: present
-        force: yes
-        add: yes
+    - name: Add the new {{ vm_name}}.yml file to the repo
+      ansible.builtin.command:
+        cmd: git add {{ vm_name}}.yml
 
-    - name: Commit changes to Git
-      git:
-        repo: "{{ git_repo }}"
-        state: present
-        force: yes
-        commit: yes
-        msg: "Adding {{ vm_name }}.yml to repo"
+    - name: Commit the new {{ vm_name}}.yml file to the repo
+      ansible.builtin.command:
+        cmd: git commit -m "Add {{ vm_name }}.yml"
+
+    - name: Push the commit to the remote repository
+      ansible.builtin.command:
+        cmd: git push
