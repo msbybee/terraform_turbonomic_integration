@@ -18,6 +18,6 @@ resource "aws_instance" "app_server" {
   instance_type = "${var.aws_instance_type}"
 
   tags = {
-    Name = "terraTurboInstance"
+    Name = "${var.aws_vm_name}"
   }
 }
