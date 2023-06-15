@@ -36,8 +36,9 @@
         cmd: git add {{ vm_name}}.yml
 
     - name: Check for changes in the repository
-     command: git status --porcelain
-     register: git_status_output
+      ansible.builtin.command:
+        cmd: git status --porcelain
+      register: git_status_output
 
     - name: Commit the new {{ vm_name}}.yml file to the repo
       ansible.builtin.command:
