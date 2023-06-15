@@ -22,13 +22,17 @@
       vars:
         query: "[*].compoundActions[?target.displayName == '{{ vm_name }}'].newEntity.displayName"
 
+    - name: Clean the new_entity variable
+      set_fact:
+      cleaned_new_entity: "{{ new_entity | regex_replace('[\\[\\]\'\']', '') }}"
+
     - name: Print var for new entity
       debug:
-        var: new_entity
+        var: cleaned_new_entity
            
     - name: Save new_entity to {{ vm_name }}.yml
       copy:
-        content: "vm_type: '{{ new_entity }}'"
+        content: "vm_type: '{{ cleaned_new_entity }}'"
         dest: "{{ vm_name }}.yml"
 
     - name: Add the new {{ vm_name}}.yml file to the repo
