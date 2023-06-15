@@ -24,7 +24,7 @@
 
     - name: Clean the new_entity variable
       set_fact:
-      cleaned_new_entity: "{{ new_entity | regex_replace('[\\[\\]\'\']', '') }}"
+        cleaned_new_entity: "{{ new_entity | regex_replace('[\\[\\]\'\']', '') }}"
 
     - name: Print var for new entity
       debug:
