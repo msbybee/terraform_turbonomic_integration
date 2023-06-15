@@ -1,0 +1,47 @@
+---
+- name: Perform curl call and save output
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    git_repo: https://github.com/msbybee/terraform_turbonomic_integration.git # URL of the Git repository
+    git_branch: main  # Branch to checkout
+
+  tasks:
+    - name: Return all market actions in Turbonomic
+      command: "curl -s -k -b /tmp/cookies -H 'accept: application/json' 'https://api-turbonomic.apps.cp4i-dtc2-1.sadtc.tdsynnex.com:443/api/v3/markets/777777/actions?ascending=true'" 
+      register: curl_output 
+
+    - name: Parse Turbonomic actions
+      set_fact:
+        json_data: "{{ curl_output.stdout | from_json }}"
+
+    - name: Find displayName of template
+      set_fact:
+        new_entity: "{{ json_data | json_query(query) | select('ne', []) | list }}"
+      vars:
+        query: "[*].compoundActions[?target.displayName == '{{ vm_name }}'].newEntity.displayName"
+
+    - name: Print var for new entity
+      debug:
+        var: new_entity
+           
+    - name: Save new_entity to {{ vm_name }}.yml
+      copy:
+        content: "vm_type: '{{ new_entity }}'"
+        dest: "{{ vm_name }}.yml"
+
+    - name: Add file to Git
+      git:
+        repo: "{{ git_repo }}"
+        state: present
+        force: yes
+        add: yes
+
+    - name: Commit changes to Git
+      git:
+        repo: "{{ git_repo }}"
+        state: present
+        force: yes
+        commit: yes
+        msg: "Adding {{ vm_name }}.yml to repo"

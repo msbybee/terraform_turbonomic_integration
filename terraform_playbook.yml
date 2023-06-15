@@ -10,9 +10,22 @@
     aws_access_key: AKIARH7RNJKMCGSJLWNL
     aws_secret_key: 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
     aws_region: us-east-1
-    vm_instance_type: t2.micro
+
+
+  vars_prompt:
+    - name: vm_name
+      prompt: "Enter a value for vm_name"
 
   tasks:
+    - name: Include {{ vm_name }}.yml
+      include_vars:
+        file: "{{ vm_name}}.yml"
+
+    - name: Set vm_instance_type  to {{ vm_type }}
+      set_fact:
+        vm_instance_type: "{{ vm_type }}"
+
+
     - name: Clone Git repository
       git:
         repo: "{{ git_repo }}"
@@ -34,6 +47,6 @@
         chdir: "{{ terraform_dir }}"
 
     - name: Run Terraform apply
-      command: terraform apply -auto-approve -var "aws_instance_type={{ vm_instance_type }}" -var "aws_region_name={{ aws_region }}"
+      command: terraform apply -auto-approve -var "aws_instance_type={{ vm_instance_type }}" -var "aws_region_name={{ aws_region }}" -var "aws_vm_name={{ vm_name }}"
       args:
         chdir: "{{ terraform_dir }}"
